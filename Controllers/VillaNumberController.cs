@@ -9,6 +9,7 @@ using MagicVilla_Web.Models.Dto;
 using System.Collections.Generic;
 using MagicVilla_Web.Models.VM;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MagicVilla_Utility;
 
 namespace MagicVilla_Web.Controllers
 {
@@ -17,11 +18,13 @@ namespace MagicVilla_Web.Controllers
         private readonly IVillaNumberService _villaNumberService;
         private readonly IVillaService _villaService;
         private readonly IMapper _mapper;
-        public VillaNumberController(IVillaNumberService villaNumberService, IMapper mapper, IVillaService villaService)
+        private readonly ILogger<HomeController> _logger;
+        public VillaNumberController(IVillaNumberService villaNumberService, IMapper mapper, IVillaService villaService, ILogger<HomeController> logger)
         {
             _villaNumberService = villaNumberService;
             _mapper = mapper;
             _villaService = villaService;
+            _logger = logger;
         }
 
         public async Task<IActionResult> IndexVillaNumber()
@@ -40,7 +43,7 @@ namespace MagicVilla_Web.Controllers
         public async Task<IActionResult> CreateVillaNumber()
         {
             VillaNumberCreateVM villaNumberVM = new();
-            var response = await _villaNumberService.GetAllAsync<APIResponse>();
+            var response = await _villaService.GetAllAsync<APIResponse>();
             if (response != null && response.IsSuccess)
             {
                 villaNumberVM.VillaList = JsonConvert.DeserializeObject<List<VillaDTO>>
@@ -48,7 +51,7 @@ namespace MagicVilla_Web.Controllers
                     {
                         Text = i.Name,
                         Value = i.Id.ToString()
-                    });
+                    }); ;
             }
             return View(villaNumberVM);
         }
